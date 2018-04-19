@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace BotIssue448Demo
 {
@@ -13,11 +13,9 @@ namespace BotIssue448Demo
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
-            .ConfigureLogging(loggingBuilder =>
-            {
-                loggingBuilder.AddConsole();
-                loggingBuilder.AddDebug();
-            })
+                .UseSerilog((hostingContext, loggerConfiguration) =>
+                    loggerConfiguration.ReadFrom.Configuration(hostingContext.Configuration)
+                )
                 .UseStartup<Startup>();
     }
 }
