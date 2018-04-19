@@ -1,0 +1,48 @@
+resources:
+- repo: self
+
+queue:
+  name: Hosted VS2017
+
+variables:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  BuildConfiguration: Release
+  Platform: AnyCpu
+
+steps:
+- task: DotNetCoreInstaller@0
+  displayName: "Install Preview2"
+  inputs:
+    version: '2.1.300-preview2-008530'
+
+- task: DotNetCoreCLI@2
+  displayName: "Restore packages"
+  inputs:
+    command: restore
+    feedsToUse: "config"
+    nugetConfigPath: "nuget.config"
+    projects: '**/*.csproj'
+    verbosityRestore: "Quiet"
+
+- task: DotNetCoreCLI@2
+  displayName: "Build"
+  inputs:
+    projects: '**/*.csproj'
+    arguments: '--configuration $(BuildConfiguration) /p:Platform=$(Platform)'
+
+- task: DotNetCoreCLI@2
+  displayName: "Publish"
+  inputs:
+    command: publish
+    publishWebProjects: True
+    arguments: '--configuration $(BuildConfiguration) --output $(build.artifactstagingdirectory) /p:Platform=$(Platform)'
+    zipAfterPublish: True
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(build.artifactstagingdirectory)'
+    ArtifactName: drop
+    publishLocation: Container
+
+
