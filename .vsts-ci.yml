@@ -20,8 +20,6 @@ steps:
   displayName: "Restore packages"
   inputs:
     command: restore
-    feedsToUse: "config"
-    nugetConfigPath: "nuget.config"
     projects: '**/*.csproj'
     verbosityRestore: "Quiet"
 
